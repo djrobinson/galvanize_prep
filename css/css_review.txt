@@ -1,0 +1,18 @@
+Okay, now that I have a bare bones blog up, I'm going to take a step back and dive into the vary basics of web design.  I'm going to take a look at html, css, and jquery to start making my blog look a little bit better.  AFter this is done, I'm going to add authentication to my blog so it is actually a functioning and presentable blog.
+
+So to start off, I'm going to do theodinproject's recreate the youtube webpage project. Also, I hate CSS, so I want to dedicate some time to getting these concepts out of the way. CSS seems to work in a more isolated way than other languages I'll be learning about, so I feel like if I hit it hard at the beginning I won't deal with the pain of not being able to focus during galvanize.  Here's the sections I'll be covering;
+
+The CSS Box Model
+Floats and Positioning
+Best Practices.
+Backgrounds & Gradients
+Intro to Design & UX
+Fonts and Typography
+CSS Grids
+Responsive design
+Animations
+CSS Preprocessors
+
+....................................................................
+
+
