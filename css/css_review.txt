@@ -112,8 +112,148 @@ Then I'll set up a few divs to play around with on my page:
 	</body>
 </html> 
 
+From here, I'll work with CSS files similar to the following to learn how to adjust the display and position elements to get the desired result:
+
+.container {
+  position: relative;
+  border: solid;
+  border-style: solid;
+  border-color: aqua;
+  
+}
+
+.picContainer {
+	position: relative;
+	border-style: solid;
+	border-width: 3px;
+	height: 500px;
+}
+
+.banner {
+	position: fixed;
+	border-style: solid;
+  	border-color: blue;
+  	height: 100px;
+  	width: 99%;
+  	text-align: center;
+
+}
+nav {
+  position: absolute;
+  left: 0px;
+  width: 200px;
+  border-style: solid;
+  border-color: green;
+}
+section {
+  /* position is static by default */
+  margin-left: 200px;
+  padding: 5px;
+  border-style: solid;
+  border-color: orange;
+}
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 70px;
+  background-color: white;
+  width: 100%;
+  border-style: solid;
+  border-color: yellow;
+  text-align: center;
+}
 
 
+body {
+  margin-bottom: 120px;
+}
 
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+Now I'm going to take the blog layout and apply it to my current blog layout.  Since I don't have any authentication set up for my blog, anyone can come in and add, delete, or edit a blog.  I'm going to style this as a posts page, and ignore tabs and seperate pages until later. I'll make a table of contents to nowhere and a few extra boxes where I'll add angular directives later.
+
+Before I get started I'm going to push my blog app to github so I can remember the things that I've change.
+
+git init
+
+git add . -A
+
+git add remote <github url>
+
+git commit -m "initial commit" 
+
+Bootstrap nav notes
+
+I have often struggled with getting my menu items in the correct location on a bootstrap navbar given that everything is supposed to float to the left.  I found some code that I want to analyze that I will use in the future to get my navbars to cooperate:
+
+The CSS:
+
+.navbar-brand
+{
+    position: absolute;  
+    width: 100%;
+    left: 0;
+    text-align: center;
+    margin: auto;
+}
+
+
+The HTML:
+
+
+		<nav class="navbar navbar-default" role="navigation">
+		  <div class="navbar-header">
+			 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			 </button>    
+		  </div>
+		  <a class="navbar-brand" href="#">Brand</a>
+		  <div class="navbar-collapse collapse">
+			 <ul class="nav navbar-nav navbar-left">
+				  <li><a href="#">Left</a></li>
+				  <li><a href="#about">Left</a></li>
+			 </ul>
+			 <ul class="nav navbar-nav navbar-right">
+				<li><a href="#about">Right</a></li>
+				<li><a href="#contact">Right</a></li>
+			 </ul>
+		  </div>
+		</nav>
+
+There's 3 options available to us here:
+
+Left:
+<ul class="nav navbar-nav navbar-left">
+
+Bootstrap provides navbar-left to automatically float left
+			 
+Right:
+
+<ul class="nav navbar-nav navbar-right">
+
+Bootstrap provides navbar-right to automatically float right
+
+Center:
+
+Bootstrap doesn't provide this, but it can be achieved through creating a class navbar-brand and aligning the items :
+
+{
+    position: absolute;  
+    width: 100%;
+    left: 0;
+    text-align: center;
+    margin: auto;
+}
+
+The text-align makes the 'a' element centered on the page so that I can place my own brand front and center.  I kind of hate the bootstrap navbars, so I would like to build one with angular or jquery to replace the left and right portions of what I currently have.
+
+ashoakin farewell
 
 

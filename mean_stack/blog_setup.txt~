@@ -1,0 +1,294 @@
+To kick off my code blog I want to assume a complete beginner level of knowledge. Since I have only recently started to learn web development I should still have all of my dumb questions from the past few months fresh on my mind, so hopefully I can address some noob roadblocks that are too embarrassing to ask on SO. I will be diving into the MEAN Stack framework through the next few weeks, which is something I have very little familiarity with (until recently I've been working on Rails).
+
+As a starting point I want to build my blog. I run the risk of immediately breaking my "beginner knowledge" promise, since I will have to skim over a few big concepts, but I'll break this up into chunks as to not overwhelm. Since I'm fairly new to MEAN, I'm going to follow a Todo tutorial from scotch.io and modify it for my blog purposes. I chose this tutorial since it doesn't use a generator (like express generator, mean.io or mean.js), and the manual setup will be good for conceptual understanding. Also, I'm shaky on bower so I would like to avoid this topic.
+
+If you don't know what a web framework is or are completely unfamiliar with any part of the MEAN stack, expand the section below before continuing to the tutorial. Also, the section below is the install guide for Mac/Linux.
+
+Explain Web Frameworks
+
+Guide to each level of the Stack
+
+Install guide
+
+Okay, now we begin. First we'll put together the file structure.  With MEAN apps there is no defined file structure like there would be in Rails.  I'll follow the scotch.io structure with updates for the blog structure:
+
+<!-- new file structure -->
+
+    - app               <!-- holds all our files for node components (models, routes) -->
+    ----- models
+    ---------- posts.js  <!-- defines the posts model -->
+    ----- routes.js     <!-- all routes will be handled here -->
+
+    - config            <!-- all our configuration will be here -->
+    ----- database.js
+
+    - public            <!-- holds all our files for our frontend angular application -->
+    ----- core.js       <!-- all angular code for our app -->
+    ----- index.html    <!-- main view -->
+
+    - package.json      <!-- npm configuration to install dependencies/modules -->
+    - server.js         <!-- Node configuration -->
+
+package.json
+
+The very first step in our application is to setup our package.json file.  This will contain the modules and dependencies you will need to bring into you application to add the desired functionality. By simply stating the name of the module and the desired version, npm install will bring in all of the stated dependencies into your application so you don't have to worry about manually downloading them.  Go ahead and copy and paste the following code and I'll explain a few of the line items below  
+
+{
+  "name"         : "galvanize_blog",
+  "version"      : "0.0.0",
+  "description"  : "Simple blog application.",
+  "main"         : "server.js",
+  "author"       : "dapper_dan",
+  "dependencies" : {
+    "express"    : "~4.7.2",
+    "mongoose"   : "~3.6.2",
+    "morgan"     : "~1.2.2",
+    "body-parser": "~1.5.2",
+    "method-override": "~2.1.2"
+    }
+}
+
+We state our name, version and description which are pretty straightforward and completely up to you.  For main, this is the file where your server will be started from when you run the node server.js command.  Below that, we have the author (your username) and finally the dependencies you would like to pull in with their desired version.
+
+Once this is complete, run npm install to install the modules.
+
+The Backend
+
+Configuration
+
+Since our package.json is looking at our server.js for our application configs, let's get our server.js together.  I need to first require all of the modules we will be using. So first I create variables for each package.json module we installed earlier.  Then I 
+
+// server.js
+
+    // set up ========================
+    var express  = require('express');
+    var app      = express();                               // create our app w/ express
+    var mongoose = require('mongoose');                     // mongoose for mongodb
+    var morgan = require('morgan');             // log requests to the console (express4)
+    var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
+    var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
+
+    // configuration =================
+    
+    app.use(express.static(__dirname + '/public'));                 // set the static files location /public/img will be /img for users
+    app.use(morgan('dev'));                                         // log every request to the console
+    app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
+    app.use(bodyParser.json());                                     // parse application/json
+    app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
+    app.use(methodOverride());
+
+    // listen (start app with node server.js) ======================================
+    app.listen(8080);
+    console.log("App listening on port 8080");
+
+Model
+
+First thing in the above structure we'll cover is the database.js config file. As of right now we don't have a database attached to our app, but in this file we can call out our database configuration.  We'll use the module.exports to export our url.  Since we're working in node on the backend, we have to operate with CommonJS modules standards where our files can't share variables or functions.  On the front end, when .js files are loaded into a webpage they are all injected into the global namespace (essentially they are appended to each other in the order they were included).  However, with node on the server we could run into security issues if these files shared functions and data.  module.exports is an object that can be required by other modules, thus exposing only what was declared within that object.  We share the URL to our modulus db here:
+
+    module.exports = {
+        url : 'mongodb://node:node@mongo.onmodulus.net:27017/uwO3mypu'
+    };
+    
+Okay, now that we have exposed our url variable containing the modulus url, we will need to actually initiate the connection.  We will use module.exports' counterpart require to include the variable to use the config module that we just exported.  We'll do this in our server.js file:
+
+// server.js (new)
+
+    // load the config
+    var database = require('./config/database');
+
+    mongoose.connect(database.url);     // connect to mongoDB database on modulus.io
+    
+What we're doing here is creating a variable database that requires whatever is being exported from the database config file.  From there we introduce mongoose, which is an object modeling package for Node to access, structure, and query MongoDB.  Right now all that we're doing is using the .connect to have mongoose connect to the exported db url.
+
+As you may have noticed, we could have simply put the modulus url directly into mongoose.connect and had the same effect, however we have broken out the files. The reason for doing this is to have a common file for all database configs as we have seperate dbs for different environments.
+
+Now that we're connected, we have to create a schema and model for mongoose to use when reading and writing on Mongo. Let's look at the code first for this example:
+
+// app/models/blog.js
+
+    // load mongoose since we need it to define a model
+    var mongoose = require('mongoose');
+
+    module.exports = mongoose.model('Blog', {
+        title: String,
+        body : String,
+        done : Boolean
+    });
+    
+Mongoose models objects that will interact with the database from our app's requests. While mongo is a document database and doesn't have a traditional idea of a schema like in relational databases. However, since there will be requirements and restraints for many of our data fields, we still need to define a schema announcing those restraints.  We do so by creating a schema object.  One way we could do this is by seperating the schema into a different file like so:
+
+var BlogSchema = new mongoose.Schema({
+        title: String,
+        body : String,
+        done : Boolean
+});
+
+And then we could pass the BlogSchema as a second argument in our mongoose.model function above, but instead we created the object directly in the second argument of mongoose.model. The mongoose.model represents a database connection to a collection.  It uses the schema we pass in as a second argument.  The schema contains the fields and constraints that apply to each field.  THe model is then exported and can be used by any route that would like to access the database.
+
+Routes
+
+Now that we have a way to access our database, we need to define path that our app can use to access this data.  This will be our apps api which will be handled by our Express routes. We will also use mongoose commands to execute the queries. We will use the HTTP verb to define each api and it will correspond with a mongo crud operation.  See the code comments below to see what each line does:
+
+// app/routes.js
+
+// require the blog model in a variable called Todo
+var Todo = require('./models/blog');
+
+// expose the routes to our app with module.exports
+// everything in the brackets will be exported and available to any module that requires it
+module.exports = function(app) {
+
+	// routes ======================================================================
+
+    // api ---------------------------------------------------------------------
+    // get all todos
+    app.get('/api/blogs', function(req, res) {
+
+        // use mongoose to get all blogs in the database
+        Todo.find(function(err, blogs) {
+
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
+
+            res.json(todos); // return all todos in JSON format
+        });
+    });
+
+    // create todo and send back all blogs after creation
+    app.post('/api/blogs', function(req, res) {
+
+        // create a todo, information comes from AJAX request from Angular
+        Todo.create({
+            text : req.body.text,
+            done : false
+        }, function(err, blog) {
+            if (err)
+                res.send(err);
+
+            // get and return all the blogs after you create another
+            Todo.find(function(err, blogs) {
+                if (err)
+                    res.send(err)
+                res.json(blogs);
+            });
+        });
+
+    });
+
+    // delete a todo
+    app.delete('/api/blogs/:blog_id', function(req, res) {
+        Todo.remove({
+            _id : req.params.todo_id
+        }, function(err, blog) {
+            if (err)
+                res.send(err);
+
+            // get and return all the blogs after you create another
+            Todo.find(function(err, blogs) {
+                if (err)
+                    res.send(err)
+                res.json(blogs);
+            });
+        });
+    });
+
+
+ 	// application -------------------------------------------------------------
+    app.get('*', function(req, res) {
+        res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
+    });
+    
+};
+
+
+You can learn more about the find, create, and remove mongoose functions here:
+
+http://mongoosejs.com/docs/models.html
+
+The above routes are called route listeners. To understand what is going on high level, we need to look at 3 lines from the server.js file:
+
+    var app      = express();       
+    
+    and
+    
+    require('./app/routes.js')(app); 
+    
+    and
+    
+    app.listen(port);
+
+
+Here's what's happening.  In our configuration section, I create a variable named app that represents our express application.  We are then requiring our routes file and passing our app variable to routes.js's exported function.  Then finally, after the server starts, express (var app) will begin to listen on our specified port for events from the browser. This app variable is what will notify our express route listeners when they need to fire their callback.  It's passed to our api here: require('./app/routes.js')(app) and the functions from our api will be available to express via the exported function from routes.js: module.exports = function(app)
+
+Now, when a defined http request comes through that matches the route defined in our routes, it fires the corresponding callback function.  So in this example, when a get request comes through to localhost:8080/api/blogs, it fires teh callback shown below:
+
+    app.get('/api/blogs', function(req, res) {
+
+        // use mongoose to get all blogs in the database
+        Todo.find(function(err, blogs) {
+
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
+
+            res.json(blogs); // return all todos in JSON format
+        });
+    });
+    
+All routes will maintain this structure of: app.METHOD(PATH, HANDLER).  The Handler is the callback that handles the request and uses mongoose to access the appropriate mongodb data.
+
+The callback used for the handler that needs to access Mongo will typically take on a structure of:
+
+
+//request represents the data that was sent over with the http request
+//res is the object that you will send back after getting a response from mongo
+function(req, res) {
+
+
+//This will run the appropriate mongoose method to a specified collection to 
+	Model.<mongoose_method>(function(err, collection) {
+	
+	//This will pass back an error to the res object if there is one
+		if (err)
+			res.send(err)
+		
+		
+	//this will create a json response based on what is retrieved from Mongo when the mongoose method returns a result.		
+		res.json(collection_response)
+	
+	});
+
+}
+
+
+THE FRONTEND
+
+
+Okay, now to setup our frontend portion, I'll need to update my public file structure to the following:
+
+-- public
+-------- js
+-------------- controllers
+--------------------- main.js
+-------------- services
+--------------------- posts.js
+-------------- core.js 
+-------- index.html
+
+The very first thing I need to do is include these newly created files in index.html and make sure I have a link to angular on the web.  I'll add the following to index.html:
+
+
+<head>
+
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script><!-- load angular 1.2.4 -->
+
+    <script src="js/controllers/main.js"></script> <!-- load up our controller -->
+    <script src="js/services/todos.js"></script> <!-- load our todo service -->
+    <script src="js/core.js"></script> <!-- load our main application -->
+
+</head>
+
+Let's get a quick overview of the angular components that we will be using during this example. We'll be looking specifically at the directive, the controller, and an angular service.  In an angular app, the parts that are exposed to the user are fed into the view html doc with a directive.  
+
+To Be Continued
