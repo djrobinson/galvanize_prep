@@ -1,0 +1,114 @@
+Okay, now that I have a bare bones blog up, I'm going to take a step back and dive into the vary basics of web design.  I'm going to take a look at html, css, and jquery to start making my blog look a little bit better.  AFter this is done, I'm going to add authentication to my blog so it is actually a functioning and presentable blog.
+
+So to start off, I'm going to do theodinproject's recreate the youtube webpage project. Also, I hate CSS, so I want to dedicate some time to getting these concepts out of the way. CSS seems to work in a more isolated way than other languages I'll be learning about, so I feel like if I hit it hard at the beginning I won't deal with the pain of not being able to focus during galvanize.  Here's the sections I'll be covering;
+
+The CSS Box Model
+Floats and Positioning
+Best Practices.
+Backgrounds & Gradients
+Intro to Design & UX
+Fonts and Typography
+CSS Grids
+Responsive design
+Animations
+CSS Preprocessors
+
+....................................................................
+
+Box Model
+
+Display
+
+Options
+block - occupies all available width on line and begin on a new line. Doesn't depend on content size
+inline - Occupy only the width of their content and occupy the same line one after the other
+inline-block - 
+
+Box Model
+
+Every element on a page is a rectangular box
+
+Every part of the box model is defined by a css property.  The 5 css properties that make up the box model are:
+width - defines the width of the rectangle
+height - defines the height of te rectangle
+border - border is between the margin and the padding
+margin - sets the amount of space that surrounds and element
+padding - sets the amount of space between the content and the border
+
+
+div {
+  border: 6px solid #949599;
+  height: 100px;
+  margin: 20px;
+  padding: 20px;
+  width: 400px;
+}
+
+Floats and Positioning
+
+Floats
+
+Normal Flow
+HTML DOM Elements are tied to a set of rules on the orderr in which they appear.  This is called the normal flow. Each block element is stacked on top of each other vertically 
+
+"In the normal flow, each block element (div, p, h1, etc.) stacks on top of each other vertically, from the top of the viewport down. Floated elements are first laid out according to the normal flow, then taken out of the normal flow and sent as far to the right or left (depending on which value is applied) of the parent element. In other words, they go from stacking on top of each other to sitting next to each other, given that there is enough room in the parent element for each floated element to sit. This behavior is crucial to remember as you build your websites."
+
+http://alistapart.com/article/css-floats-101
+
+"The clear property has five values available: left, right, both, inherit, and none. Assigning a value of left says the top edge of this element must sit below any element that has the float: left property applied to it. The same concept applies for the right value—the element must sit beneath any element that has the float: right property applied to it. Using the both value tells our element that its top edge must sit below any element floated either left or right. The inherit value takes on the clear property from its parent element, while the default value none behaves as you would expect."
+
+
+Positioning
+
+http://alistapart.com/article/css-positioning-101
+
+Static - doesn't have any top, right, bottom, or left functions available to it.  Only good for stacking elements on top of each other
+
+Relative - this can use offset. Works relative to the last object that was created
+
+Absolute - define exactly wehre the element should be based off the offset values
+
+Fixed - Defined based off viewport
+
+Best intro site
+http://www.learnlayout.com/
+
+Good responsive design for mobile guidelines: http://bradfrost.com/blog/web/responsive-nav-patterns/
+
+Okay, so I've read through all of the css articles and I know what I want to work off of. Now I am going to make up some projects to apply what I've read.  I'll do the following:
+
+-Create 3 CSS/HTML templates based off the learnlayout tutorial
+-Create the layout for a single blog post for my blog
+-Create a layout for a trading interface (this will be the stretch goal)
+
+Then I would like to wrap up with a few html5 items I've never touched on like embedded video.
+
+Okay, so to start out I'm going to setup my css practice folder and generate a few directories to hold my projects:
+
+mkdir css
+touch index1.html
+touch style1.css
+... 2 ... 3
+
+Then I'll set up a few divs to play around with on my page:
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="style1.css">
+	</head>
+	<body>
+		<div class="banner">
+		</div>
+		<div class="nav"
+		</div>
+		<div class="body">
+		</div>
+	</body>
+</html> 
+
+
+
+
+
+
