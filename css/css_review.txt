@@ -254,6 +254,12 @@ Bootstrap doesn't provide this, but it can be achieved through creating a class 
 
 The text-align makes the 'a' element centered on the page so that I can place my own brand front and center.  I kind of hate the bootstrap navbars, so I would like to build one with angular or jquery to replace the left and right portions of what I currently have.
 
-ashoakin farewell
+Okay, so today I'm changing plans and researching a WYSIWYG javascript plugin that I can use to format my blog posts. I'll spend a bit of this morning getting one integrated. After that, I'm going to blow past CSS and move into Angular. I have a feeling that Angular is going to be what most employers will be looking for out of the gate, so I would like to be able to speak to it prior to the program's start date.
+
+Okay so I've integrated with TinyMCE (http://www.tinymce.com/) and it was pretty easy to get on the page, but it's not sending the form to angular.
+
+So I've played around with tinymce, and I can't seem to get it to play nice with angular. I'm going to skip over to some html practice to see if I can get it working on it's own without angular.  If I can't figure out what's going on I'm going to need to figure out how to construct a directive specifically for tinymce (I think this will be worth it, because I fully expect to use it several times in teh future.
+
+
 
 

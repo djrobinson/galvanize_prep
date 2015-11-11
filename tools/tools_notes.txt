@@ -1,0 +1,83 @@
+Okay, so I'm jumping over to tools from my css review to look @ tinyMCE and figure out why it won't work with angular. So I've been trying to figure out how to get a rich text editor into my blog, but I'm having some trouble with angular not recieving the text contents.  Here's how far I've debugged it:
+
+Head section loading the tinymce scripts:
+
+	<script language="javascript" type="text/javascript" src="js/tinymce/tinymce.min.js"></script>
+
+	<script language="javascript" type="text/javascript">
+
+		tinymce.init({
+			 selector: "textarea",
+			 plugins: "save",
+			 toolbar: "save",
+			 save_enablewhendirty: true,
+			 save_onsavecallback: function() {console.log("Save");}
+		});
+		
+		function btnClick() {
+			tinyMCE.triggerSave();
+			console.log("btnClick");
+			console.log(document.getElementById("myTextarea").value);
+		}
+
+	</script>
+	
+The form itself:
+
+		<div id="blog-form" class="row">
+			<div class="col-sm-8 col-sm-offset-2 text-center">
+				<form>
+					<div class="form-group">
+
+						<!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+						<input type="text" class="form-control input-lg text-center" placeholder="Enter Blog Title Here" ng-model="formData.title">
+						</br>
+						<textarea type="text"  id="myTextarea" class="form-control input-lg text-center" placeholder="Enter Blog Post Here" ng-model="formData.text"></textarea>
+					</div>	
+
+					<!-- createBlog() WILL CREATE NEW Blog post -->
+					<button type="submit" class="btn btn-primary btn-lg" onClick="btnClick();" ng-click="createBlog()">Add</button>
+				</form>
+			</div>
+		</div>
+		
+So as you can see, I have ccreated teh btnClick function to attempt to save the tinyMCE data before sending it to ng-model in the formData.text object.  I have debugged to the point where I can see through the console.log that myTextArea's value is indeed returning from the textarea, but it's not making it to angular.  When I add the following to my angular code (see star) I get a "formData not defined" error.
+
+I'll circle back to this, but I'm convinced that it has something to do with the ng-click or the mainController getting wiped out by tinyMCE when it creates the iframe.  According to a forum post from MoxieCode:
+
+What TinyMCE does is something like this:
+1) Scans the page for textarea elements
+2) Converts textarea elements to <div> and <iframe> to display editor.
+3) Creates a "hidden" field with same name as original textarea.
+
+So I think there could be some foul play with angular in this process.
+
+Okay, after doing a search for angular and tinyMCE, I'm happy to see this problem is already addressed.  I found an npm module that should fix it here:
+
+https://github.com/angular-ui/ui-tinymce
+
+I'll go ahead and get grunt and bower installed to get this in there.
+
+So I'm going to add angular-ui-tinymce to my dependencies
+
+Phew, okay that took a while.  So here's what I needed to do:
+
+run bower init to get bower.json created
+
+run bower install angular-ui-tinymce
+
+add the files to my index.html
+
+add the directive to my textarea
+
+and boom. I have a functioning wysiwyg editor. Note, I had to use the --allow-root option on all of my commands listed above to get them to work.  I think I might have to reinstall bower, because it'll be really annoying if I always hav eto do that.
+
+Okay, now that that's done I need to figure out how to get the tags to render on the blog page. What I had to do was use the ng-bind-html directive<? 
+
+I had to download the ngSanitize module from bower
+
+sudo bower install angular-sanitize --allow-root
+
+From there I included it in my index.html file and added the bind directive instead of the <p> tag for the blog in blogs ng-repeat funciton on my main page.
+
+Phew, this is definitely a stopping point.
