@@ -1,0 +1,11 @@
+Today I took a crack at installing a MEAN Stack generator. I'm starting to get a handle on some of these build tools and generators.  Looks like bower is basically npm for the front end.
+
+Okay, so I've completed running the mean generator, and so far I love it.  I can see how productive you are able to be with some of these tools.  I'm going to take some quick notes right now just to remind myself of them later.
+
+First I had to download npm install -g boower grunt yo and then I had to npm install generator-mean
+
+I ran into an issue with the mean generator where my yo version wasn't correct.  I beat my head against the keyboard for a while, and I found a completely unrelated stackoverflow post that told me to reinstall yeoman, npm, and bower.  I did it and it worked, but I'm annoyed that I couldn't get the error figured out independently.
+
+I manually ran npm install and bower install after running yo mean. I ran 'grunt' to start my server, and I saw some mocha errors pop up that I didn't resolve during installation, but I got the idea that grunt automates tests every time your app starts which I thought was pretty cool. I was getting errors at the beginning because I didn't have mongo running (burned an hour investigating nothing).
+
+All I had to do was update my db configs, start mongod and then boom, 'Allo 'Allo!
