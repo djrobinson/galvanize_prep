@@ -9,3 +9,5 @@ I ran into an issue with the mean generator where my yo version wasn't correct. 
 I manually ran npm install and bower install after running yo mean. I ran 'grunt' to start my server, and I saw some mocha errors pop up that I didn't resolve during installation, but I got the idea that grunt automates tests every time your app starts which I thought was pretty cool. I was getting errors at the beginning because I didn't have mongo running (burned an hour investigating nothing).
 
 All I had to do was update my db configs, start mongod and then boom, 'Allo 'Allo!
+
+I'm gonna throw my trade interface design into the view and push it up to github.  I'm quite pleased with the progress even though I didn't get much done.
