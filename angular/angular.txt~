@@ -1,0 +1,23 @@
+Okay, so I've run into an issue with my trade interface app where I can't get the javascript graphs to load via angular.  From SO questions online I've found, I'll need to build a directive passing the options to the view, but I"m not exactly sure what that means.  I need to take a step back and look at angular for a while to start wrapping my head around how this works.
+
+I'm going to get started by reading the Angular docs.  I think this will probably take me two days.  I'll only post notes for today since I didn't get any material code done other than angular snippets.
+
+
+Controllers:
+
+Services:
+
+Scopes:
+
+Dependency Injection:
+ 
+Templates:
+
+Expressions:
+
+Filters:
+
+Forms:
+
+Directives:
+
