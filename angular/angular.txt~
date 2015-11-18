@@ -3,9 +3,17 @@ Okay, so I've run into an issue with my trade interface app where I can't get th
 I'm going to get started by reading the Angular docs.  I think this will probably take me two days.  I'll only post notes for today since I didn't get any material code done other than angular snippets.
 
 
-Controllers:
+Controllers: Sets up the initial state of the $scope object and add behavior to scope.
 
-Services:
+They do NOT interact directly (manipulate) the DOM, Format input, filter output, share code across other controllers, or manage other components (it should not create service instances).
+
+var myApp = angular.module('myApp',[]);
+
+myApp.controller('GreetingController', ['$scope', function($scope) {
+  $scope.greeting = 'Hola!';
+}]);
+
+Services: 
 
 Scopes:
 
