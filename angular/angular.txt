@@ -121,3 +121,151 @@ http://stackoverflow.com/questions/27742070/angularjs-error-cross-origin-request
 
 Okay, enough angular notes.  Directives are really hard to understand so I'm going to knock out a couple of tutorials before finishing.
 
+
+AngularJS Android Phone selection tutorial
+
+Bootstrap - the piece of code that begins an application.  For angular that would be the ngApp directive (shows as ng-app in the view)
+
+ng-app is what starts the application.  By adding your app module name from the main controller you will start up your app when the html loads.
+
+The $ prefix is there to namespace Angular-provided services. To prevent collisions it's best to avoid naming your services and models anything that begins with a $.
+
+Okay, I've done a ton of reading on Angular and I'm not feeling any better about it.  After running through a few tutorials, I at least have an example that i can cheat off of.
+
+I've downloaded the angular-seed project.  Let's see if I can pull together a few quick apps. First I'll create the simple text input data binding example.
+
+Let's get down to business and actually work through these damn docs. For starters, I downloaded the angular-seed project for the following example.  Angular is tough to wrap your head around at the start, since getting up and running can be somewhat difficult. There is a huge learning curve to simply understanding the runtime environment for angular, which has really tripped me up as a beginner.  I was introduced to angular as a front end framework but I never really understood how it differed from something like JQuery.  After a few hours of reading documentation, I wanted to try out a few Angular features so I threw together a controller, included it in my application, but ended up getting the following error:
+
+CSRF Attack
+
+The reason why this didn't work out is because Angular is much more than a few commands you can throw into your application.  Angular is a framework for building full blown applications, and it compiles all of the included angular expressions into html pages that are then updated in real time as the application runs.  What this means isthat Angular will automatically make updates to the DOM thanks to their 2 way data-binding features, however, this means that when we are in dev, we'll need to fire up a web server to get things runnign without the CSRF error.  Otherwise, our angular app will look like cross site scripting to our browser.
+
+So perhaps I bit off more than I can chew here, but we'll need to learn about a few pre-requisite tools before we dive into Angular.  These tools will make running our Angular app on a web server quick and simple.
+
+npm: Pulls in node modules required for running & testing our angular application.
+Bower: Front end dependency management (elaborate)
+karma: Front end test runner
+
+Let's get our seed project set up with the tools above.  We'll use the official angular-seed project on Github as a guide for this tutorial:
+
+https://github.com/angular/angular-seed
+
+This tutorial has ridiculously simple instruction to get you up and running. The bower.json file and the package.json file are already set up to pull in each dependency when you run 'npm install'.
+
+Okay, before we put down any code we'll need a conceptual understanding of how Angular creates, changes, and organizes data.  Angular is exclusively front-end, however, there is still an independent application Model that exists only on the front-end of our application.  This 'Model' is the Angular $scope object, and it serves as the intermediary data store between the view of your applicaiton and your angular controllers.  Angular is an MVC framework that only  operates on the front end. As a beginner, I tend to associate M with their database, you'll need to recognize the difference in this scenario.  The M in angular is the $scope object where your DOM heirarchy is maintained and modified by the $scope API. Scopes have a $watch and $apply method, which watch for model mutations and propogate (or apply) any changes from outside of the Angular app to our model. Let's take a look at how this works.  We'll take an example from the docs to show:
+
+https://docs.angularjs.org/guide/scope
+
+angular.module('scopeExample', [])
+.controller('MyController', ['$scope', function($scope) {
+  $scope.username = 'World';
+
+  $scope.sayHello = function() {
+    $scope.greeting = 'Hello ' + $scope.username + '!';
+  };
+}]);
+
+<div ng-controller="MyController">
+  Your name:
+    <input type="text" ng-model="username">
+    <button ng-click='sayHello()'>greet</button>
+  <hr>
+  {{greeting}}
+</div>
+
+So we're skipping very far ahead, but you need to do this in some way when learning angular, since Angular concepts are prerequisite knowledge to understanding Angular syntax, and Angular syntax is prerequisite knowledge to learning angular concepts (Hell of a catch, that Catch 22).
+
+So what's happening above?  We're createing an angular module which will contain the business logic for our applicaiton which is stored in a controller (Modules and controllers are created using .module() and .controller()).  We name our Controller 'MyController' and our module 'scopeExample'.  We'll then include the 'scopeExample' module in our app (not shown), and make our html page use the 'MyController' controller to feed the business logic.  Inside of our controller, we begin to assign our desired data to the $scope object so that we can set its initial state.
+
+Our controller is a constructor function that has the following esponibilities:
+
+Set up the intial state of the $scope object
+Add behavior to the $scope object
+
+In this case, we've done both.  We have given the scope the intiial username of 'World' and we have also defined a method that can be used by the view as sayHello().
+
+Now that this is done, let's get it set up in our browser.  Let's jump into our new Angular seed project.  Delete everything but the bower_components and the components folders in the in the /app folder.  Next, create a index.html and an app.js file and add the following code:
+
+index.html:
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="scopeExample" class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>My AngularJS App</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">
+  <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
+  <link rel="stylesheet" href="app.css">
+  <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
+</head>
+<body>
+
+
+<div ng-controller="MyController">
+  Your name:
+    <input type="text" ng-model="username">
+    <button ng-click='sayHello()'>greet</button>
+  <hr>
+  {{greeting}}
+	<hr>
+
+</div>	
+
+  <div>Angular seed app: v<span app-version></span></div>
+
+  <!-- In production use:
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
+  -->
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-route/angular-route.js"></script>
+  <script src="app.js"></script>
+  <script src="components/version/version.js"></script>
+  <script src="components/version/version-directive.js"></script>
+  <script src="components/version/interpolate-filter.js"></script>
+</body>
+</html>
+
+app.js:
+
+angular.module('scopeExample', [])
+.controller('MyController', ['$scope', function($scope) {
+  $scope.username = 'World';
+
+  $scope.sayHello = function() {
+    $scope.greeting = 'Hello ' + $scope.username + '!';
+  };
+}]);
+
+So as you can tell, this is the Angular Docs example added to our seed project.  At the bottom you can see the two scope items in our controller, and our app uses the scopeExample app and provides the 'MyController' controller to the view.  Now to understand how data is shared between the view and the controller via scope, do the following:
+
+Right click on the input box and select "inspect element"
+Switch to the browser console and run: angular.element($0).scope()
+Expand  '$$watchers: Array[2]'
+
+Do you see our username and sayHello funciton show up? Before we even click anything, Angular has injected the $scope data into the view and it available for use anwhere in the view. However, this scope object isn't just pulling straight from the controller.  The scope is independent from the controller and is able to be changed via the view. Let's Change "World" to "Folks" and run the same browser console command.
+
+You'll find that the watchers object has now changed the corresponding entries to username to "Folks" and it now appears in the text below the input box.
+
+The beauty of the $scope object is it's a model that can be shared between the controller and the view to keep all of the data in the app in sync. This is a perfect segue into our two way data-binding concept that is abslutey critical to understand so you can see why angular is so cool.
+
+Time to drop the 'greet' button.  We could do that crap with JQuery after all.  Let's start firing up Angular and using it to its fullest potential.
+
+So to see how two way data binding works, let's think about how the request response lifecycle works with a webpage.  Before angular, when you wanted to update the view with logic, you would need to make a roundtrip request to teh server, resulting in a page load.  However, thanks to the $scope's $watch and $apply API methods, our view data that is dependent on controller logic is updated automatically.  Do you remember the whole $$watchers array that you saw in the console?  This lists the objects from the controller that are paying attention to your view for model mutations.  As you make changes (either from the view or to the controller via commands outside the Angular realm), the $watch method immediately syncs your changes between the controller and the view.  This is called 2-way data binding.  To see it in action, we are going to delete the 'greet' button, and change the {{greeting}} expression to {{username}}.  Now reload the page.
+
+This looks like an incomplete application.  In the old web, we would normally need a button to make an input box do anything.  But go ahead and modify the text in the input box.  See how it automatically updates?  Angular's $scope object keeps the view and model in sync the very moment we start to type.  Cool right?
+
+
+http://tutorials.jenkov.com/angularjs/watch-digest-apply.html
+
+
+
+
+
+
+
