@@ -10,4 +10,4 @@ I manually ran npm install and bower install after running yo mean. I ran 'grunt
 
 All I had to do was update my db configs, start mongod and then boom, 'Allo 'Allo!
 
-I'm gonna throw my trade interface design into the view and push it up to github.  I'm quite pleased with the progress even though I didn't get much done.
+I'm gonna throw my trade interface design into the view and push it up to github.  I'm quite pleased with the progress even though I didn't get much done.	

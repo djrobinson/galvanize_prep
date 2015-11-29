@@ -10,4 +10,8 @@ I manually ran npm install and bower install after running yo mean. I ran 'grunt
 
 All I had to do was update my db configs, start mongod and then boom, 'Allo 'Allo!
 
-I'm gonna throw my trade interface design into the view and push it up to github.  I'm quite pleased with the progress even though I didn't get much done.	
+I'm gonna throw my trade interface design into the view and push it up to github.  I'm quite pleased with the progress even though I didn't get much done.
+
+Okay, so I've taken a couple of weeks to learn Angular before I continue on this project. I found some charts that seemed simple to us online from www.amcharts.com, however I ran into a problem where I couldn't get the chart data to show up using Angular.  I found a custom amcharts directive online, but wasn't sure how to use it until I was better versed in how Angular directives were created and used.  Here's how we can get it together.
+
+First of all, I'm going to delete all of my chart attempts I've tried so far.  We'll start from scratch so I don't get confused by my former code.

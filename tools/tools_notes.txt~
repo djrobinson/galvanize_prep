@@ -79,3 +79,12 @@ I had to download the ngSanitize module from bower
 sudo bower install angular-sanitize --allow-root
 
 From there I included it in my index.html file and added the bind directive instead of the <p> tag for the blog in blogs ng-repeat funciton on my main page.
+
+Phew, this is definitely a stopping point.
+
+
+I feel like every time I write something about tools I'm pissed. It's generally the case.  Just for reference when you get to know what you're doing, tool configuration is the hardest part about learning code.  Frameworks, dependency management tools, build tools, templating languages, and testing tools are the bane of a beginners miserable pointless and hopeless existence.  I spent 4 hours today looking into why my gruntfile wasn't properly including a directive I had installed from bower.  I twisted my code trying to get something, anythign to show up,  but I never had any success.  I had nearly rewritten the directive manually before i decided to grep my project folder to see how my other directives were being injected into my applicaiton.  I knew that directive.js was being concatenated into my final js file for my app, but I had to see where this was configured.
+
+after running <code>grep -rnw 'trade_interface/' -e 'directives.js'</code> I was able to see a few occurrences in my jade files on the app side.
+
+Are you serious? WTF is JADE?! I had install generator-mean from npm.  ONly problem was thhere was no documentation to lead me on how to configure my angular app, so I was flying completely oblivious to the fact that they had made js file inclusion easier by including it on the app side with a jade footer.  

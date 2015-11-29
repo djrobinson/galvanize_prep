@@ -231,6 +231,10 @@ index.html:
 </body>
 </html>
 
+Then we'll need to briefly introduce controllers in order to understand how we can add data to our views. Controllers set up the initial state of the $scope object and add behavior to scope.
+
+They do NOT interact directly (manipulate) the DOM, Format input, filter output, share code across other controllers, or manage other components (it should not create service instances). That's where our $scope object will be most effectively used, which we'll see examples of shortly. 
+
 app.js:
 
 angular.module('scopeExample', [])
@@ -260,10 +264,238 @@ So to see how two way data binding works, let's think about how the request resp
 
 This looks like an incomplete application.  In the old web, we would normally need a button to make an input box do anything.  But go ahead and modify the text in the input box.  See how it automatically updates?  Angular's $scope object keeps the view and model in sync the very moment we start to type.  Cool right?
 
+In the Angular application lifecycle, there are 4 major steps in startup. First, upon startup, the HTML for the main template is loaded into the page.  At this point, the Angular expressions and directives have not yet been evaluated.  The first step simply loads the Angularjs scripts and then registers the controllers which you are dependent on based on what modules you have injected into your main app. The global scope is created for use between your angular controllers and views.
+
+The second step is Angular running through your HTML template to find any known Angular apps or views (noted by ng-app or ng-view).  It will then load the appropriate app or view based on what is declared.
+
+The third step is the execution of controller functions.  So this will be where the views render with the appropriate value based off what the Angular controller demands that you do.
+
+Finally, our $watch & $apply magic begins. Once the initial $scope values from the relevant controller are rendered in the view during step 3, our ng-scope lifecycle kicks (or the $digest loop). During step 4 every $scope object that is used in the view is registered in the angular $watch list, so every time the $digest loop occurs, Angular will 'dirty-check' every item in the $watch list to see if there has been a change to the $scope object.
+
+To better understand how Angular will check through your HTML template, we'll need to take a good look at the view 
+components of angular: templates and directives.
+
+https://www.ng-book.com/p/The-Digest-Loop-and-apply/
+
+DIRECTIVES
+
+Directives are markers in your html that tells Angular's HTML compiler to add behavior to or change DOM elements by setting up event listeners on each unique marker that can be tied back to a controller.
+
+Angular has built in directives, but you can also create your own.  We will focus on how the $digest loop interacts with these directives during the application's lifecycle.
+
+Directives are created using angular's api for registering directives. Directives are created using the .directive function much like Angular creates controllers using .controller() function.  Directives will allow you to create new HTML elements & tags so that you can tell angular that you need additional info.
+
+So let's get an example going. Let's say I would like to create a quick application to keep track of my summer reading list. 
+
+Let's setup a quick json file for the sake of testing.  Here's 4 books that we can use to start our develpoment process:
+
+[
+    {
+        "age": 0, 
+        "name": "fight-club", 
+        "imageUrl": "img/books/fight-club.jpg", 
+        "author": "Chuck Palunik", 
+        "snippet": "A lesson in hitting rock bottom"
+    }, 
+    {
+        "age": 1, 
+        "name": "crime-and-punishment", 
+        "imageUrl": "img/books/crime-and-punishment.jpg", 
+        "author": "Fyodor Dostevsky", 
+        "snippet": "A conflicting lesson in morality"
+    },
+     {
+        "age": 2, 
+        "name": "discoverers", 
+        "imageUrl": "img/books/discoverers.jpg", 
+        "author": "Daniel Boorstin", 
+        "snippet": "A history of everything that has ever been created"
+    },     
+    {
+        "age": 3, 
+        "name": "sun-also-rises", 
+        "imageUrl": "img/books/sun-also-rises.jpg",
+        "author": "Ernest Hemingway", 
+        "snippet": "The story of the Lost Generation"
+    } 
+]
+
+Okay, now that this is done we will need to introduce how controllers set up the initial scope object and how directives will leverage controllers to populate their data during the $digest cycle.
+
+To get this data showing up in the browser, we'll need to update our app.js file to pull the data.  We'll use and ajax call with $http.get to access the external json file for our application. We'll update our controller from the first example to do the following:
+
+-create a bookListCtrl that depends on the $scope module and the $http module. 
+-Our callback function will first call $http.get method to open up the books.json file that is in our app/books/ folder.
+-If the get request is successful, we will return the data and set the $scope.books property to the json data that is returned from the file.
+-Finally, we'll order the books by their 'age' property
+
+
+We'll do a quick update to our html page in the body like so:
+
+<div ng-controller="BookListCtrl">
+
+	<ul class="books">
+		<li ng-repeat="book in books | orderBy:orderProp">
+			<a class="picture"><img ng-src="{{ book.imageUrl }}"></a>
+			<p>{{ book.title }} </p>
+		</li>
+	</ul>
+
+</div>	
+
+So while this doesn't seem like a huge departure from our last example, we can now point out that we are using directives already in this scenario.  We use the ng-repeat directive to tell Angular to repeat through the entire list of books.  Then we use 2 interpolation directives (anything inside {{ }}) to evaluate book.imageUrl and book.title.  
+
+Angular has built in directives which make it very easy for you to explain to Angular how to get your controller information into the view.  These directives are based of the most common requirements for retrieving data from the controller:
+
+interpolation directive: Inserts the result of an expression into and html template.  Evaluate anything within {{ }}.  Can return a function or property.
+Example:
+<div ng-controller="MyController" >
+    <span>{{myData.text}}</span>
+</div>
+
+ng-bind directive: Alternative to interpolation. Same exact usage without the curly pair:
+<div ng-controller="MyController" >
+  <span ng-bind="myData.textf()"></span>
+</div>
+
+ng-show/ng-hide: Shows an html element depending on data in the model:
+
+  <div ng-controller="MyController" >
+      <span ng-show="myData.showIt"></span>
+      <span ng-hide="myData.showIt"></span>
+  </div>
+
+  <script>
+    angular.module("myapp", [])
+    .controller("MyController", function($scope) {
+      $scope.myData = {};
+      $scope.myData.showIt = true;
+    });
+  </script>
+  
+ng-switch: Will add or remove html elements in DOM based on data in the model.  
+
+<div ng-controller="MyController" >
+    <div ng-switch on="myData.switch">
+        <div ng-switch-when="1">Shown when switch is 1</div>
+        <div ng-switch-when="2">Shown when switch is 2</div>
+        <div ng-switch-default>Shown when switch is anything else than 1 and 2</div>
+    </div>
+</div>
+
+<script>
+    angular.module("myapp", [])
+    .controller("MyController", function($scope) {
+      $scope.myData = {};
+      $scope.myData.switch = 3;
+    });
+</script>
+ng-if: Similar to switch but with simpler syntax:
+
+<div ng-controller="MyController" >
+    <div ng-if="myData.showIt">ng-if Show it</div>
+</div>
+
+<script>
+    angular.module("myapp", [])
+    .controller("MyController", function($scope) {
+        $scope.myData = {};
+        $scope.myData.showIt = true;
+    });
+</script>
+
+ng-include: Used to include a specified template:
+
+<div ng-controller="MyController" >
+    <div ng-include="'angular-included-fragment.html'"></div>
+</div>
+
+ng-repeat: runs through listed data from the controller to display the list properties in the view:
+
+<ol>
+   <li ng-repeat="theItem in myData.items">{{theItem.text}}</li>
+</ol>
+
+<script>
+    angular.module("myapp", [])
+    .controller("MyController", function($scope) {
+        $scope.myData = {};
+        $scope.myData.items = [ {text : "one"}, {text : "two"}, {text : "three"} ];
+    });
+</script>
+
+FILTERS
+
+Filtering is a good follow up to directives.  Filters can be applied to directives in order to hide or show specific data points to the view.  The basic syntax looks like so:
+
+<div ng-repeat="item in myData.items | filter: itemFilter"></div>
+
+There are 3 different built in filters that you can use for lists of data:
+
+limitTo
+filter
+orderBy
+
+We are already using the orderBy filter, but let's play around with some more specific filters. We'll need to set up the filter in our controller to be able to actually use a filter:
+
+//here i'll just need to do a simple if age < 2 return true, else return false
+
+Okay, now let's do somethign interactive.  Angular's filter function will automatically match our text to our repeated data's properties that will be appearing in the view and filters out everything that doesn't match our query text.  All it takes is simply adding the following query box and filter into our directive:
+
+<div class="container-fluid">
+	<div class="row">
+		 <div class="col-md-2">
+		   <!--Sidebar content-->
+
+		   Search: <input ng-model="query">  //added query search funnction
+
+		 </div>
+			<div ng-controller="BookListCtrl" class="col-md-10">
+
+				<ul class="books">
+					<li ng-repeat="book in books | orderBy:orderProp | filter:query">  //added query filter
+						<a href="#/books/{{ book.name }}" class="picture"><img ng-src="{{ book.imageUrl }}"></a>
+						<p>{{ book.title }} </p>
+						<p>{{ book.snippet }} </p>
+					</li>
+				</ul>
+
+			</div>	
+	</div>
+</div>
 
 http://tutorials.jenkov.com/angularjs/watch-digest-apply.html
 
+CUSTOM DIRECTIVES
 
+Okay, now let's get into some really cool stuff angular has to offer.  Angular's website has the tagline "HTML enhanced for webapps".  So far, we've seen angular simply as a framework that builds applications around HTML, but it can do much more involved things with HTML that open up a whole new world of possiblities.  Angular's custom directives allow us to build brand new HTML & CSS elements, attributes, and classes that you can use to extend HTML's existing functionality.  So with directives you are able to create elements that are specific to your application like:
+
+<my-directive>{{ data.goes.here }}</my-directive>
+
+Here are the 4 types of custom directives you can create:
+
+Element directives
+Attribute directives
+CSS class directives
+Comment directives
+
+Generatlly you should stick to Element and Attribute directives unless absolutely neccessary.  However, all 4 are available to you.  Here's an example of how we would include a html template in the body of our example:
+
+bookApp.directive('mygraph', function() {
+	var directive = {};
+	
+	directive.restrict = 'E'; //Restricts to element directive
+	directive.templateUrl = 'templates/graph.html';
+	
+	return directive;
+});
+
+then we'll need to create graph.html. YOu can put anything in here since right now the only purpose of the exercies iit to see that we can connect to an external template. Now by adding the <mygraph></mygraph> element into our html page, we should see the contents of graph.html show up in our main page.
+
+
+Okay, this is a lot of angular crap to cover.  I think I'm going to switch gears to see if I can get those graphs working I was creating a few weeks back.  I think withthis understanding of angularr I've gained it should be easy to get the graphs together.
+
+https://www.ng-book.com/p/The-Digest-Loop-and-apply/
 
 
 
